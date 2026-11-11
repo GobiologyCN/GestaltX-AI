@@ -1,37 +1,23 @@
-GestaltX — Third-Party Notices
-Copyright (C) 2026 huamidev
-https://github.com/huamidev
+# GestaltX-AI — Third-party notices
 
-GestaltX application code is licensed under GNU GPL version 3. The worse_query component retains its GPL-3.0-or-later terms. The complete GPL v3 text is included with the app and in LICENSE. No warranty is provided.
+This repository is a modified, reduced-scope fork of [huamidev/GestaltX](https://github.com/huamidev/GestaltX). Copyright © 2026 huamidev and contributors. The fork's application code remains under **GPL-3.0-only**; see [LICENSE](LICENSE). No warranty is provided.
 
-1. worse_query
-Author: Taj C (forcequit / forcequitOS)
-Copyright (C) 2026 Taj C (forcequit)
+## worse_query
+
+Author: Taj C (forcequit / forcequitOS), © 2026.
+
 Source: https://github.com/forcequitOS/worse_query
-License: GPL-3.0-or-later, as stated in the source-file notices.
-Included: worse_query.m and worse_query.h.
-The original escape implementation and notices are preserved. GestaltX supplies its own application, document transactions and UI. The provisioned App Group identifier remains group.com.huami.gestultx.
 
-2. NeoSpring / WebKit respring
-Original technique: neonmodder123 — https://github.com/neonmodder123
-Swift implementation: skadz108 — https://github.com/skadz108
-NeoSpring project: rooootdev — https://github.com/rooootdev/neospring
-GPL-licensed adaptation used as reference and incorporated here:
-Nouvborne/Ketamine — https://github.com/Nouvborne/Ketamine
-License: GNU GPL v3 (copy included in the app).
-Included/adapted: the respring HTML in NeoSpringView.swift and the earlier GestaltX respring implementation.
-GestaltX changes dated 2026-11-09: fixed raw-string closing-tag escaping and Web Crypto request length; added timeout, cancellation, nonpersistent WebKit data store and Simulator exclusion. NeoSpring itself is credited as a project/technique reference, not assigned a license it does not declare.
+Included files: `GestaltX/worse_query.m` and `GestaltX/worse_query.h`. The notices in those files state **GPL-3.0-or-later** and are retained. The sandbox escape is not the same as a full jailbreak, but it bypasses a major iOS isolation boundary. It must be independently reviewed.
 
-3. Research and workflow references (not bundled source)
-PoomSmart/MGKeys: https://github.com/PoomSmart/MGKeys
-leminlimez/Nugget: https://github.com/leminlimez/Nugget
-rooootdev/mond: https://github.com/rooootdev/mond
-frs0n/GestaltEdit: https://github.com/frs0n/GestaltEdit
-These projects informed key names and workflow design. GestaltX implements its own preset catalog, plist model, backups, transactions and interface; their application code, assets and noncommercial-licensed components are not included. Each upstream retains its own license and copyright.
+## Original GestaltX cache-link protection
 
-GestaltX is not affiliated with Apple or any credited project. Upstream sandbox-escape OS support is not a guarantee that the MobileGestalt system cache is writable, or that capability flags produce working hardware features. A verified file write does not prove a feature works or that a respring succeeded.
+`GestaltX/GXCacheDirectory.m` and `GestaltX/GXCacheDirectory.h` were developed for the upstream project and are retained under its GPL license. They temporarily replace and restore an App Group's cache directory while obtaining a sandbox extension.
 
-GitHub mark: Primer Octicons (GitHub), MIT license.
-Source: https://raw.githubusercontent.com/primer/octicons/main/icons/mark-github-16.svg
-Full license: Primer-Octicons-MIT.txt in the application bundle.
-GitHub names and marks remain GitHub trademarks.
+## Unbundled references
+
+MobileGestalt research references include [PoomSmart/MGKeys](https://github.com/PoomSmart/MGKeys) and [leminlimez/Nugget](https://github.com/leminlimez/Nugget). Their application sources are not bundled here.
+
+The upstream project's generic presets, NeoSpring-based respring feature, GitHub mark / Primer Octicons asset, LCSign-derived entitlement parser, document import/share extension, and other specialized components **have been removed**. Notices for those removed files are not evidence that their code remains in this fork.
+
+This fork is not affiliated with Apple or any credited project. An accepted cache write does not guarantee Apple Intelligence is available on a Chinese-market iPhone.
