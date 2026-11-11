@@ -1,16 +1,11 @@
-//
-//  GestaltXApp.swift
-//  GestaltX
-//
-
+// SPDX-License-Identifier: GPL-3.0-only
 import SwiftUI
 
 @main
-struct GestaltXApp: App {
+struct GestaltXAIApp: App {
     var body: some Scene {
         WindowGroup {
-            AIOnlyPreviewView()
-                .environment(\.layoutDirection, Bundle.main.preferredLocalizations.first?.hasPrefix("fa") == true ? .rightToLeft : .leftToRight)
+            ContentView()
         }
     }
 }
