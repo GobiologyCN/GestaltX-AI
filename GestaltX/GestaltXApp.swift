@@ -9,7 +9,7 @@ import SwiftUI
 struct GestaltXApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AIOnlyPreviewView()
                 .environment(\.layoutDirection, Bundle.main.preferredLocalizations.first?.hasPrefix("fa") == true ? .rightToLeft : .leftToRight)
         }
     }
