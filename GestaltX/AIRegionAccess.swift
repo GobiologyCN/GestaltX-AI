@@ -65,6 +65,7 @@ final class AIRegionManager: ObservableObject {
         run {
             let newState = try store.enable()
             needsRestart = true
+            message = "RegionCode verified as LL. Apple Intelligence availability is not guaranteed; a restart may be needed."
             return newState
         }
     }
@@ -72,6 +73,7 @@ final class AIRegionManager: ObservableObject {
         run {
             let newState = try store.restore()
             needsRestart = true
+            message = "Original CH RegionCode restored and verified; a restart may be needed."
             return newState
         }
     }
