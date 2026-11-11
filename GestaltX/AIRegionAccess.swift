@@ -23,26 +23,26 @@ enum AIRegionAccess {
                     throw AIRegionError.denied("Only iOS 27.x is supported by this exploit.")
                 }
                 let target = (AIRegionKeys.devicePath as NSString).deletingLastPathComponent
-                let signedGroups = GXEntitlementsReader.usableAppGroups()
-                guard !signedGroups.isEmpty else {
-                    throw AIRegionError.denied("The signed app needs a usable App Group entitlement.")
+                // This fork accepts one App Group only. In contrast to upstream,
+                // do not enumerate or probe groups belonging to other apps.
+                let group = "group.com.gobiologycn.gestaltxai"
+                guard let root = FileManager.default.containerURL(
+                    forSecurityApplicationGroupIdentifier: group
+                ) else {
+                    throw AIRegionError.denied("The signed app must contain the GestaltX-AI App Group.")
                 }
-                for signedGroup in signedGroups {
-                    var handle = worse_query(target, signedGroup, false, false)
-                    if handle == -4,
-                       let root = FileManager.default.containerURL(
-                        forSecurityApplicationGroupIdentifier: signedGroup
-                       ) {
-                        // Preserve the existing upstream container setup path.
-                        try? FileManager.default.createDirectory(
-                            at: root.appendingPathComponent("Library/Caches"),
-                            withIntermediateDirectories: true
-                        )
-                        handle = worse_query(target, signedGroup, false, false)
-                    }
-                    if handle >= 0 { return handle }
+                var handle = worse_query(target, group, false, false)
+                if handle == -4 {
+                    try? FileManager.default.createDirectory(
+                        at: root.appendingPathComponent("Library/Caches"),
+                        withIntermediateDirectories: true
+                    )
+                    handle = worse_query(target, group, false, false)
                 }
-                throw AIRegionError.denied("MobileGestalt sandbox extension could not be obtained.")
+                guard handle >= 0 else {
+                    throw AIRegionError.denied("MobileGestalt sandbox extension could not be obtained.")
+                }
+                return handle
                 #endif
             },
             release: { worse_query_release($0) }
