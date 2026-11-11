@@ -24,6 +24,13 @@ jobs:
           swiftc -o "$RUNNER_TEMP/AIRegionCoreTests" \
             GestaltX/AIRegionCore.swift tests/AIRegionCoreTests.swift
           "$RUNNER_TEMP/AIRegionCoreTests"
+      - name: Test temporary App Group cache-link preservation
+        run: |
+          clang -fobjc-arc -fblocks -framework Foundation \
+            -I GestaltX \
+            GestaltX/GXCacheDirectory.m tests/CacheDirectoryTests.m \
+            -o "$RUNNER_TEMP/CacheDirectoryTests"
+          "$RUNNER_TEMP/CacheDirectoryTests"
       - name: Compile iPhone Simulator app
         run: |
           xcodebuild -quiet -project GestaltX.xcodeproj -target GestaltX \
