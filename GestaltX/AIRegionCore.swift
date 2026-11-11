@@ -83,7 +83,11 @@ enum AIPlist {
     }
 
     static func sameGeneration(_ a: [String: Any], _ b: [String: Any]) -> Bool {
-        for key in ["CacheUUID", "CacheVersion"] {
+        guard let lhsUUID = a["CacheUUID"] as? String, !lhsUUID.isEmpty,
+              let rhsUUID = b["CacheUUID"] as? String, lhsUUID == rhsUUID else {
+            return false
+        }
+        for key in ["CacheVersion"] {
             switch (a[key], b[key]) {
             case (nil, nil): break
             case (let x?, let y?) where equal(x, y): break

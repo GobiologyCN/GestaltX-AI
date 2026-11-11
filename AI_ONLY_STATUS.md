@@ -18,6 +18,19 @@
 - The implementation writes the existing protected cache file and attempts rollback, but a crash or storage failure between steps can still leave a corrupt cache. **Do not test on a primary iPhone without accepting this risk.**
 - The app performs no server communication of its own, but upstream dependencies and Apple's iOS services are outside this statement.
 
+## Automated verification
+
+The macOS GitHub Actions run at
+https://github.com/GobiologyCN/GestaltX-AI/actions/runs/43042492032
+successfully compiled both simulator and iPhoneOS targets, validated the
+app's dedicated App Group entitlement, produced an **ad-hoc signed**
+development IPA, and passed the region-only and cache-link preservation
+fixture suites.
+
+Later changes have not yet been validated by that run; always use the
+latest PR check status. **No actual physical iPhone testing or independent
+security audit is implied by green CI.**
+
 ## Verification gates
 
 1. GitHub Actions synthetic fixture tests pass.

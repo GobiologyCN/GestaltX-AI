@@ -69,6 +69,18 @@ struct AIRegionCoreTests {
         boolReplaced["CacheExtra"] = value
         try check(!AIPlist.equal(original, boolReplaced), "Bool and Int must not compare equal")
 
+        // Fail closed if the device or cache generation cannot be identified.
+        var missingUUID = original
+        missingUUID.removeValue(forKey: "CacheUUID")
+        try check(!AIPlist.sameGeneration(missingUUID, missingUUID),
+                  "A missing CacheUUID must never be accepted as a verified generation")
+        var foreignDevice = original
+        var foreignExtra = foreignDevice["CacheExtra"] as! [String: Any]
+        foreignExtra["UniqueDeviceID"] = "different-fixture-device"
+        foreignDevice["CacheExtra"] = foreignExtra
+        try check(!AIPlist.sameGeneration(original, foreignDevice),
+                  "A different device identity must invalidate the saved baseline")
+
         // Full happy path: original snapshot, region-only write, verified
         // readback, and region-only restoration from the original snapshot.
         do {

@@ -2,7 +2,7 @@ name: Verify GestaltX-AI
 
 on:
   push:
-    branches: [ai-only]
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -36,7 +36,7 @@ jobs:
           xcodebuild -quiet -project GestaltX.xcodeproj -target GestaltX \
             -configuration Debug -sdk iphonesimulator \
             SYMROOT="$RUNNER_TEMP/simulator" \
-            CODE_SIGNING_ALLOWED=NO DEVELOPMENT_TEAM="" build
+            CODE_SIGNING_ALLOWED=NO DEVELOPMENT_TEAM="" ONLY_ACTIVE_ARCH=NO build
       - name: Package development IPA
         id: build
         run: .github/scripts/build-ipa.sh "$RUNNER_TEMP/ipa"
