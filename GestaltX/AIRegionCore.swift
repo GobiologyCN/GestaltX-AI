@@ -191,7 +191,7 @@ final class AIRegionStore {
         guard AIPlist.region(root) == "CH" else {
             throw AIRegionError.denied("No original backup exists and RegionCode is not CH; refusing to infer an original value.")
         }
-        let metadata = AIBackupMetadata(sha256: AIPlist.hash(bytes), length: bytes.count, recordedAt: .now)
+        let metadata = AIBackupMetadata(sha256: AIPlist.hash(bytes), length: bytes.count, recordedAt: Date())
         persist(bytes, at: originalURL)
         persist(try JSONEncoder().encode(metadata), at: metadataURL)
         return root
@@ -254,7 +254,7 @@ final class AIRegionStore {
             // not just on first launch, so failures can be recovered from bytes.
             let backupPath = backupFolder.appendingPathComponent("BeforeWrite-\(UUID().uuidString).plist")
             persist(before, at: backupPath)
-            guard Data(contentsOf: deviceURL) == before else {
+            guard try Data(contentsOf: deviceURL) == before else {
                 throw AIRegionError.denied("Device changed after backup. No write made.")
             }
             do {
