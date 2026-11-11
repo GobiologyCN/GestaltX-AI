@@ -93,16 +93,19 @@ enum AIPlist {
         let ac = a["CacheData"] as? Data
         let bc = b["CacheData"] as? Data
         guard ac != nil, ac?.count == bc?.count else { return false }
+        var verifiedIdentifiers = 0
         for key in AIRegionKeys.identity {
             let aID = (a["CacheExtra"] as? [String: Any])?[key]
             let bID = (b["CacheExtra"] as? [String: Any])?[key]
             switch (aID, bID) {
             case (nil, nil): break
-            case (let x?, let y?) where equal(x, y): break
+            case (let x?, let y?) where equal(x, y):
+                verifiedIdentifiers += 1
             default: return false
             }
         }
-        return true
+        // A cache-generation match alone is not proof of the same device.
+        return verifiedIdentifiers > 0
     }
 
     static func hash(_ data: Data) -> String {
