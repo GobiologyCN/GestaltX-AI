@@ -12,15 +12,13 @@ permissions:
 
 jobs:
   test-and-build:
-    runs-on: xcode-27
+    runs-on: macos-latest
     timeout-minutes: 40
     steps:
       - name: Checkout source
         uses: actions/checkout@v7
-      - name: Select Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
+      - name: Report selected Xcode
+        run: xcodebuild -version
       - name: Run synthetic region and recovery tests
         run: |
           swiftc -o "$RUNNER_TEMP/AIRegionCoreTests" \
