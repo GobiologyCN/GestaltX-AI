@@ -96,6 +96,32 @@ enum GestaltKeys {
     static let modelNumber = "97JDvERpVwO+GHtthIh7hA"
 }
 
+// This policy is enforced at the final device-write boundary. Hiding the
+// upstream editor UI is not a security boundary.
+enum AIRegionWritePolicy {
+    static let targetCode = "LL"
+
+    static func validate(original: GestaltDocument, edited: GestaltDocument, restoring: Bool) throws {
+        let proposed = edited.extra[GestaltKeys.regionCode]
+        guard proposed == nil || proposed is String else {
+            throw GestaltFailure("AI-only: RegionCode must remain a string or be absent in a verified restore.")
+        }
+        if !restoring {
+            guard let code = proposed as? String, code == targetCode else {
+                throw GestaltFailure("AI-only: ordinary device writes may only set RegionCode to LL.")
+            }
+        }
+
+        // Reconstruct the *only* allowed delta, then compare the entire plist,
+        // including CacheData and all unrelated CacheExtra / identity fields.
+        var allowed = original
+        allowed.set(proposed, for: GestaltKeys.regionCode)
+        guard edited.matches(allowed) else {
+            throw GestaltFailure("AI-only: an unrelated system field or cache byte would change. No device write was started.")
+        }
+    }
+}
+
 struct GestaltDocument: @unchecked Sendable {
     private(set) var root: [String: Any]
     var extra: [String: Any] { root["CacheExtra"] as? [String: Any] ?? [:] }
@@ -673,6 +699,9 @@ actor GestaltFileStore {
                 originallyAbsentKeys: Set<String> = []) throws -> DocumentSnapshot {
         guard expected.source != .device || edited.preservesDeviceIdentity(of: expected.document) else {
             throw GestaltFailure("Device identity fields cannot be changed in the system plist. Open a local file to edit these fields.")
+        }
+        if expected.source == .device {
+            try AIRegionWritePolicy.validate(original: expected.document, edited: edited, restoring: record != nil)
         }
         if record == nil { try DeviceCacheOptions.validateEdit(from: expected.document, to: edited) }
         guard originallyAbsentKeys.allSatisfy({ edited.extra[$0] == nil }) else {
