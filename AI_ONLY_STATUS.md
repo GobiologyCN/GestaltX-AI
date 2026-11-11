@@ -1,41 +1,34 @@
-# GestaltX-AI — inspection prototype (Phase 1)
+# GestaltX-AI status and safety notes
 
-This is a limited, **read-only user-interface prototype** derived from [huamidev/GestaltX](https://github.com/huamidev/GestaltX), not a security-reviewed Apple Intelligence unlock.
+## Implemented in source
 
-## Purpose
+- One iOS app target; original Share Extension, document import, general MobileGestalt editor and unrelated capability presets deleted.
+- Strict `RegionCode` edit restricted to CH → LL and validated original LL → CH restore.
+- Full-plist deep equality checks to reject unexpected fields, altered types and `CacheData` mutations.
+- An immutable-once-created original snapshot and SHA-256 metadata, validated before updates or restoration.
+- Pre-write snapshot, freshness check, readback validation, best-effort rollback if writing fails.
+- Explicit UI confirmation, no auto-respring and no other optional feature controls.
+- Synthetic fixture test suite for core behavior and recovery.
 
-- Read the device's existing MobileGestalt cache on supported iOS 27.x systems.
-- Display the existing `RegionCode` value and the **proposed** US value (`LL`).
-- Create a device-cache backup in the app container using the upstream backup implementation.
-- **Do not apply any change to the iPhone.** There are deliberately no Apply, Restore, model-spoofing or eSIM controls in the new entry screen.
+## Security limitations
 
-## Scope and honest limitations
+- `worse_query` still uses a sandbox escape and touches its App Group temporary cache link. The original implementation has not undergone a formal security audit in this fork.
+- The code is not yet proven safe on iOS 27.2.1. A successful compile/test does not prove a real device is safe or Apple's region limitation can be bypassed.
+- Backups are stored in the app's Application Support folder; app deletion or device loss can remove them. A full encrypted iPhone backup is still essential before deployment.
+- The implementation writes the existing protected cache file and attempts rollback, but a crash or storage failure between steps can still leave a corrupt cache. **Do not test on a primary iPhone without accepting this risk.**
+- The app performs no server communication of its own, but upstream dependencies and Apple's iOS services are outside this statement.
 
-The inherited codebase still contains generic field editing, other capability presets, full-plist restoration and a share extension. This initial commit changes **the launched screen**, not the reachability of all underlying routines. It is **not yet** a field-level whitelist or a minimal attack surface.
+## Verification gates
 
-Read/backup operations use upstream `worse_query`, a sandbox escape. A read-only UI does not remove that risk. It may affect the app's temporary container state. This code has not been audited for security, built with Xcode, or verified on a physical iPhone in this development session.
+1. GitHub Actions synthetic fixture tests pass.
+2. iPhone Simulator and iPhoneOS builds pass and the ad-hoc signature has only the expected App Group.
+3. Code review of the resulting source diff and existing `worse_query` and `GXCacheDirectory` C/ObjC files.
+4. Manually inspect signed entitlements after re-signing for the chosen install method.
+5. Full encrypted iPhone backup and preferably non-primary test-device validation.
+6. Physical test confirms CH → LL, no unrelated data change, and LL → CH restore.
 
-The app-container backup is not a full-device backup and could be lost on app deletion. Do not rely on it as the sole recovery method. Apple Intelligence availability may still be limited by hardware, iOS version, and Apple server-side restrictions.
+**No actual iPhone verification has been performed in this development session.**
 
-## Phase 2 progress (source code only)
+## License
 
-A strict policy has been added to `GestaltFileStore.commit`, the final device-write entry point. For normal device writes the target is strictly `CacheExtra[RegionCode] = "LL"`; for a verified backup restore the only permissible difference is the saved region value, and all unrelated plist content (including sales-region fields and `CacheData`) must remain equivalent to the current device snapshot. This is a defense-in-depth preflight, **not** a guarantee against bugs or the underlying sandbox-escape risk.
-
-Fixture scenarios were authored in `tests/AIRegionWritePolicyTests.swift` for allowed US code, unrelated-field rejection, type rejection, CacheData mutation rejection, backups, and region-only restoration. **These tests have not yet been executed**, and existing legacy tests expecting unrestricted edits will need migration before they can be used as regression checks. The physical device is **not** connected or modified.
-
-The entry screen is still inspection-only. The underlying general-purpose code and share extension remain compiled and have **not** been deleted. No installable binary has been verified.
-
-## Proposed Phase 2 acceptance criteria
-
-1. Remove unrelated features, share extension, imports, generic editor, and unused dependencies from the build rather than merely hiding them.
-2. ~~Enforce a write-time allowlist~~ **Implemented in source; awaiting compilation and fixture test results.** Only the region-code field may change even during restore; arbitrary whole-file restoration is not permitted.
-3. Preserve and test upstream backup creation, data integrity verification, readback verification, failure recovery, and device-identity checks.
-4. Require explicit review of original and proposed values before any write.
-5. Test on synthetic fixtures and a supported non-primary test device before exposing write controls.
-6. Review licensing and third-party notices; retain upstream attribution and GPL-3.0-only terms.
-
-## Original project and license
-
-Upstream: https://github.com/huamidev/GestaltX
-
-Copyright remains with original contributors. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Derived from [huamidev/GestaltX](https://github.com/huamidev/GestaltX). Copyright holders retain their rights; GPL-3.0-only applies. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
